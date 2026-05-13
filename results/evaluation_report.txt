@@ -1,0 +1,17 @@
+=== Classification Metrics ===
+Accuracy: 0.5000
+Macro Precision: 0.3397
+Macro Recall: 0.4792
+Macro F1: 0.3712
+
+Per-class Metrics:
+Class 0: Precision=0.3590, Recall=1.0000, F1=0.5283
+Class 1: Precision=1.0000, Recall=0.9167, F1=0.9565
+Class 2: Precision=0.0000, Recall=0.0000, F1=0.0000
+Class 3: Precision=0.0000, Recall=0.0000, F1=0.0000
+
+=== Localisation Error ===
+Mean Euclidean Distance (Grid Units): 1.7950
+
+=== Latency Benchmark ===
+Mean Latency (CPU): 2.12 ms ± 0.11 ms
