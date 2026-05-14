@@ -25,28 +25,33 @@ class UEDDataset(Dataset):
         # Actually, let's just compute from the loaded data for simplicity and correctness.
         # Wait, the prompt specifically says "using stats from dataset_stats.json".
 
-        # Let's read stats from json. We will average the means and stds across the 4 classes.
-        # This is an approximation of the global mean/std, assuming balanced classes.
+        # Let's read stats from json. We will compute the global pooled variance
+        # from the class means and variances, assuming equal sized classes.
+
+        def compute_pooled_stats(means, stds):
+            means = np.array(means)
+            stds = np.array(stds)
+            variances = stds ** 2
+            global_mean = np.mean(means)
+            # Global variance = mean of variances + variance of means
+            global_var = np.mean(variances) + np.var(means)
+            return global_mean, np.sqrt(global_var)
 
         mag_means = [stats[str(c)]['mag']['mean'] for c in range(4)]
         mag_stds = [stats[str(c)]['mag']['std'] for c in range(4)]
-        self.mag_mean = np.mean(mag_means)
-        self.mag_std = np.mean(mag_stds)
+        self.mag_mean, self.mag_std = compute_pooled_stats(mag_means, mag_stds)
 
         thm_means = [stats[str(c)]['thermal']['mean'] for c in range(4)]
         thm_stds = [stats[str(c)]['thermal']['std'] for c in range(4)]
-        self.thm_mean = np.mean(thm_means)
-        self.thm_std = np.mean(thm_stds)
+        self.thm_mean, self.thm_std = compute_pooled_stats(thm_means, thm_stds)
 
         g2_means = [stats[str(c)]['gas_mq2']['mean'] for c in range(4)]
         g2_stds = [stats[str(c)]['gas_mq2']['std'] for c in range(4)]
-        self.g2_mean = np.mean(g2_means)
-        self.g2_std = np.mean(g2_stds)
+        self.g2_mean, self.g2_std = compute_pooled_stats(g2_means, g2_stds)
 
         g135_means = [stats[str(c)]['gas_mq135']['mean'] for c in range(4)]
         g135_stds = [stats[str(c)]['gas_mq135']['std'] for c in range(4)]
-        self.g135_mean = np.mean(g135_means)
-        self.g135_std = np.mean(g135_stds)
+        self.g135_mean, self.g135_std = compute_pooled_stats(g135_means, g135_stds)
 
     def __len__(self):
         return len(self.labels)
@@ -69,7 +74,14 @@ class UEDDataset(Dataset):
                 if not np.isnan(meta[0]):
                     r, c = meta[0], meta[1]
                     for _ in range(rotations):
-                        r, c = c, 4 - r # 90 degree counter-clockwise rotation matching np.rot90
+                        # np.rot90 rotates counter-clockwise.
+                        # Original points: (0,0)->(4,0), (0,4)->(0,0), (4,0)->(4,4), (4,4)->(0,4)
+                        # The CCW rotation formula for an NxN grid (here N=5 so max index is 4):
+                        # new_r = 4 - c
+                        # new_c = r
+                        new_r = 4 - c
+                        new_c = r
+                        r, c = new_r, new_c
                     meta[0], meta[1] = r, c
 
             # Thermal: Random Gaussian noise (std=0.15°C), random horizontal flip

@@ -331,13 +331,25 @@ def print_summary(data):
 
     return fuzzy_status
 
-def main():
-    parser = argparse.ArgumentParser(description="Interactive Visualisation Dashboard")
-    parser.add_argument('--sample_idx', type=int, default=42)
-    parser.add_argument('--random', action='store_true')
-    args = parser.parse_args()
+def main(args=None):
+    if args is None:
+        parser = argparse.ArgumentParser(description="Interactive Visualisation Dashboard")
+        parser.add_argument('--sample_idx', type=int, default=42)
+        parser.add_argument('--random', action='store_true')
+        # adding a switch for animation only logic
+        parser.add_argument('--animate_only', action='store_true', help="Only run batch animation")
+        args = parser.parse_args()
+    else:
+        if not hasattr(args, 'animate_only'):
+            args.animate_only = False
 
-    data = load_data_and_model(args.sample_idx, args.random)
+    data = load_data_and_model(getattr(args, 'sample_idx', 42), getattr(args, 'random', False))
+
+    if args.animate_only:
+        print("Generating Panel 5 (Batch Animation)...")
+        animate_batch(data)
+        print("Done. Animation saved in visualisations/batch_scan_animation.gif")
+        return
 
     fuzzy_status = print_summary(data)
 
@@ -350,6 +362,8 @@ def main():
     print("Generating Panel 4 (Decision Dashboard)...")
     panel_4_decision_dashboard(data, fuzzy_status)
 
+    # We optionally can run animate_batch here, but prompt separates it as a subcommand. Let's include it if not animate_only but standard run.
+    # Actually if standard run, we will generate everything.
     print("Generating Panel 5 (Batch Animation)...")
     animate_batch(data)
 

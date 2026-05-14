@@ -174,12 +174,13 @@ def generate_gas(label):
     return gas
 
 
-def main():
+def main(args=None):
     """Main generation loop for the UED dataset."""
-    parser = argparse.ArgumentParser(description="Generate UED dataset")
-    parser.add_argument("--output_dir", type=str, default="./data", help="Output directory")
-    parser.add_argument("--seed", type=int, default=42, help="Random seed")
-    args = parser.parse_args()
+    if args is None:
+        parser = argparse.ArgumentParser(description="Generate UED dataset")
+        parser.add_argument("--output_dir", type=str, default="./data", help="Output directory")
+        parser.add_argument("--seed", type=int, default=42, help="Random seed")
+        args = parser.parse_args()
 
     np.random.seed(args.seed)
 

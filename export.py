@@ -8,6 +8,9 @@ def export_model(model, output_dir):
     model.eval()
     model.to('cpu')
 
+    # Save unquantised PyTorch model dict required for inference
+    torch.save(model.state_dict(), os.path.join(output_dir, 'hmlf_net.pt'))
+
     dummy_mag = torch.randn(1, 1, 5, 5)
     dummy_thm = torch.randn(1, 1, 8, 8)
     dummy_gas = torch.randn(1, 20, 2)

@@ -8,13 +8,18 @@ from evaluate import evaluate_model
 from export import export_model
 import os
 
-def main():
-    parser = argparse.ArgumentParser(description="Train HMLFNet for UED Detection")
-    parser.add_argument('--data_dir', type=str, default='./data')
-    parser.add_argument('--output_dir', type=str, default='./results')
-    parser.add_argument('--epochs', type=int, default=60)
-    parser.add_argument('--fast_debug', action='store_true', help="Run 2 epochs on 200 samples")
-    args = parser.parse_args()
+def main(args=None):
+    if args is None:
+        parser = argparse.ArgumentParser(description="Train HMLFNet for UED Detection")
+        parser.add_argument('--data_dir', type=str, default='./data')
+        parser.add_argument('--output_dir', type=str, default='./results')
+        parser.add_argument('--epochs', type=int, default=60)
+        parser.add_argument('--fast_debug', action='store_true', help="Run 2 epochs on 200 samples")
+        args = parser.parse_args()
+    else:
+        # Default fast_debug if not present when called from main
+        if not hasattr(args, 'fast_debug'):
+            args.fast_debug = False
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Using device: {device}")

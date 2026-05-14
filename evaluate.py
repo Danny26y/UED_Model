@@ -7,6 +7,7 @@ from sklearn.metrics import accuracy_score, precision_recall_fscore_support, con
 import time
 
 def evaluate_model(model, test_loader, device, output_dir):
+    print(f"Evaluating model. Results will be saved to {output_dir}")
     model.eval()
     all_preds = []
     all_labels = []
