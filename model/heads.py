@@ -7,7 +7,7 @@ class ClassificationHead(nn.Module):
         self.fc1 = nn.Linear(64, 32)
         self.relu = nn.ReLU()
         self.dropout = nn.Dropout(0.3)
-        self.fc2 = nn.Linear(32, 4)
+        self.fc2 = nn.Linear(32, 3)
 
     def forward(self, x):
         x = self.dropout(self.relu(self.fc1(x)))

@@ -37,21 +37,31 @@ class UEDDataset(Dataset):
             global_var = np.mean(variances) + np.var(means)
             return global_mean, np.sqrt(global_var)
 
-        mag_means = [stats[str(c)]['mag']['mean'] for c in range(4)]
-        mag_stds = [stats[str(c)]['mag']['std'] for c in range(4)]
+        active_classes = [0, 1, 3]
+
+        mag_means = [stats[str(c)]['mag']['mean'] for c in active_classes]
+        mag_stds = [stats[str(c)]['mag']['std'] for c in active_classes]
         self.mag_mean, self.mag_std = compute_pooled_stats(mag_means, mag_stds)
 
-        thm_means = [stats[str(c)]['thermal']['mean'] for c in range(4)]
-        thm_stds = [stats[str(c)]['thermal']['std'] for c in range(4)]
+        thm_means = [stats[str(c)]['thermal']['mean'] for c in active_classes]
+        thm_stds = [stats[str(c)]['thermal']['std'] for c in active_classes]
         self.thm_mean, self.thm_std = compute_pooled_stats(thm_means, thm_stds)
 
-        g2_means = [stats[str(c)]['gas_mq2']['mean'] for c in range(4)]
-        g2_stds = [stats[str(c)]['gas_mq2']['std'] for c in range(4)]
+        g2_means = [stats[str(c)]['gas_mq2']['mean'] for c in active_classes]
+        g2_stds = [stats[str(c)]['gas_mq2']['std'] for c in active_classes]
         self.g2_mean, self.g2_std = compute_pooled_stats(g2_means, g2_stds)
 
-        g135_means = [stats[str(c)]['gas_mq135']['mean'] for c in range(4)]
-        g135_stds = [stats[str(c)]['gas_mq135']['std'] for c in range(4)]
+        g135_means = [stats[str(c)]['gas_mq135']['mean'] for c in active_classes]
+        g135_stds = [stats[str(c)]['gas_mq135']['std'] for c in active_classes]
         self.g135_mean, self.g135_std = compute_pooled_stats(g135_means, g135_stds)
+
+        # Filter out Class 2
+        valid_indices = [i for i, lbl in enumerate(self.labels) if lbl != 2]
+        self.mag = self.mag[valid_indices]
+        self.thermal = self.thermal[valid_indices]
+        self.gas = self.gas[valid_indices]
+        self.labels = self.labels[valid_indices]
+        self.metadata = self.metadata[valid_indices]
 
     def __len__(self):
         return len(self.labels)
@@ -61,6 +71,11 @@ class UEDDataset(Dataset):
         thermal = self.thermal[idx].copy()
         gas = self.gas[idx].copy()
         label = self.labels[idx]
+
+        # Remap Class 3 to Class 2 to maintain contiguous 0,1,2 range
+        if label == 3:
+            label = 2
+
         meta = self.metadata[idx].copy()
 
         if self.split == 'train':

@@ -69,7 +69,7 @@ def evaluate_model(model, test_loader, device, output_dir):
     report_lines.append(f"Macro Recall: {macro_recall:.4f}")
     report_lines.append(f"Macro F1: {macro_f1:.4f}\n")
     report_lines.append("Per-class Metrics:")
-    for c in range(4):
+    for c in range(3):
         report_lines.append(f"Class {c}: Precision={precision[c]:.4f}, Recall={recall[c]:.4f}, F1={f1[c]:.4f}")
 
     # 5. Localisation error
@@ -116,7 +116,7 @@ def evaluate_model(model, test_loader, device, output_dir):
     plt.figure(figsize=(10, 8))
     # simple softmax
     probs = torch.softmax(torch.tensor(all_logits), dim=1).numpy()
-    for c in range(4):
+    for c in range(3):
         y_true = (all_labels == c).astype(int)
         y_score = probs[:, c]
         fpr, tpr, _ = roc_curve(y_true, y_score)
@@ -132,7 +132,7 @@ def evaluate_model(model, test_loader, device, output_dir):
 
     # 4. Gate weights plot
     gate_means = []
-    for c in range(4):
+    for c in range(3):
         mask = (all_labels == c)
         if mask.sum() > 0:
             c_weights = all_gate_weights[mask]
@@ -144,11 +144,11 @@ def evaluate_model(model, test_loader, device, output_dir):
 
     plt.figure(figsize=(10, 6))
     width = 0.25
-    x = np.arange(4)
+    x = np.arange(3)
     plt.bar(x - width, gate_means[:, 0], width, label='Mag')
     plt.bar(x, gate_means[:, 1], width, label='Thermal')
     plt.bar(x + width, gate_means[:, 2], width, label='Gas')
-    plt.xticks(x, [f'Class {c}' for c in range(4)])
+    plt.xticks(x, [f'Class {c}' for c in range(3)])
     plt.ylabel('Average Gate Weight')
     plt.title('Gate Weights by Class')
     plt.legend()

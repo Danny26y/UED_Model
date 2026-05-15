@@ -1,7 +1,7 @@
 # Underground Explosive Device (UED) Detection Rover ML Pipeline
 
 ## 1. Project Title & Abstract
-This project implements a multi-modal deep learning pipeline designed to enable an autonomous rover to detect Underground Explosive Devices (UEDs). The system fuses data from three distinct sensor modalities: a Magnetometer array detecting magnetic anomalies, a Thermal array identifying subsurface temperature variations, and Gas sensors monitoring airborne explosive/volatile compounds. By combining these signals, the model can safely and accurately distinguish between safe background environments and three distinct threat classes: Metallic UEDs, Plastic UEDs, and Improvised Explosive Devices (IEDs) with Ammonium Nitrate.
+This project implements a multi-modal deep learning pipeline designed to enable an autonomous rover to detect Underground Explosive Devices (UEDs). The system fuses data from three distinct sensor modalities: a Magnetometer array detecting magnetic anomalies, a Thermal array identifying subsurface temperature variations, and Gas sensors monitoring airborne explosive/volatile compounds. By combining these signals, the model can safely and accurately distinguish between safe background environments and two distinct threat classes: Metallic UEDs and Improvised Explosive Devices (IEDs) with Ammonium Nitrate.
 
 ## 2. Architecture Overview
 The core model is the **Hierarchical Multi-Level Fusion Network (HMLFNet)**, structured around a three-level hierarchy tailored for resource-constrained edge execution (e.g., Raspberry Pi 5).
@@ -38,11 +38,10 @@ L3   +-----------+   +-------------+   +--------------+
 | Gas / Air Quality | MQ-2 & MQ-135 | Flammable gases, explosives (Rs/Ro) | (20, 2) |
 
 ## 4. Dataset
-The dataset consists of 20,000 synthetic samples generated to mimic realistic environmental dynamics, structured dynamically at runtime. It's stratified by class:
+The dataset consists of 15,000 synthetic samples generated to mimic realistic environmental dynamics, structured dynamically at runtime. It's stratified by class:
 - **Class 0 (Safe):** Background noise, ambient temperature, baseline gas levels.
 - **Class 1 (Metallic UED):** Strong dipole magnetic signature, cool thermal heat sink anomaly, zero gas off-gassing.
-- **Class 2 (Plastic UED):** Very weak magnetic signature, warm thermal signature (plastic insulator), elevated MQ-135 readings.
-- **Class 3 (IED / AN):** Almost zero magnetic dipole, irregular thermal blob, aggressive dual MQ-2 and MQ-135 descent indicating strong gas plume.
+- **Class 2 (IED / AN):** Almost zero magnetic dipole, irregular thermal blob, aggressive dual MQ-2 and MQ-135 descent indicating strong gas plume.
 
 ## 5. Installation
 ```bash
@@ -78,7 +77,7 @@ python main.py pipeline --seed 42
 ## 8. Expected Performance
 | Metric | Target | Notes |
 |---|---|---|
-| Test Accuracy | >95% | 4-class synthetic dataset |
+| Test Accuracy | >95% | 3-class synthetic dataset |
 | Macro F1 | >0.94 | Balanced across all classes |
 | Inference Latency (CPU) | <100 ms | On Raspberry Pi 5 |
 | Model Size (quantised) | <50 MB | INT8 dynamic quantisation |

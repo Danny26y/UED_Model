@@ -134,7 +134,7 @@ def panel_4_decision_dashboard(data, fuzzy_status):
     pred_class = data['pred_class']
     label = data['label']
 
-    class_names = ['Safe (0)', 'Metallic UED (1)', 'Plastic UED (2)', 'IED/AN (3)']
+    class_names = ['Safe (0)', 'Metallic UED (1)', 'IED/AN (2)']
 
     fig, axes = plt.subplots(3, 2, figsize=(15, 12))
 
@@ -247,7 +247,7 @@ def animate_batch(data):
     np.random.shuffle(batch_indices)
 
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
-    class_names = ['Safe', 'Metallic', 'Plastic', 'IED/AN']
+    class_names = ['Safe', 'Metallic', 'IED/AN']
 
     def update(frame):
         idx = batch_indices[frame]
@@ -288,7 +288,7 @@ def animate_batch(data):
     plt.show()
 
 def print_summary(data):
-    class_names = ['Safe', 'Metallic UED', 'Plastic UED', 'IED/AN']
+    class_names = ['Safe', 'Metallic UED', 'IED/AN']
 
     idx = data['idx']
     true_class = class_names[data['label']]
